@@ -11,8 +11,9 @@ class GameBoard extends React.Component { // contains all of the cells
     }
     MakeGrid = (cells = this.state.cellcount) =>{  // makes the grid for the game
         const max = cells * cells
+        const indexStart = 1;
          let grid = [];
-         for(let i = 1; i <= max; i++){
+         for(let i = indexStart; i <= max; i++){
              grid[i] = <LifeCell XbyY={cells} validCells={this.CheckEdges} loc={i} key={i} />;
          }
          return grid;
@@ -27,26 +28,53 @@ class GameBoard extends React.Component { // contains all of the cells
          leftEdge = this.MakeEdge(horizontalStepCount,verticalStepCount);
          bottomEdge = this.MakeEdge(leftEdge[leftEdge.length - 1],horizontalStepCount);
 
-         if(topEdge.indexOf(cell.myLoc) > -1 ){
-             cell.above = NaN;
-             cell.upperleft = NaN;
-             cell.upperright = NaN;
-         }
-         if(bottomEdge.indexOf(cell.myLoc) > -1 ){
-             cell.below = NaN;
-             cell.lowerleft = NaN;
-             cell.lowerright = NaN;
-         }
+         let diffTopAndBottom = leftEdge[leftEdge.length - 1] - horizontalStepCount;
+
+
          if(rightEdge.indexOf(cell.myLoc) > -1 ){
-             cell.right = NaN;
-             cell.upperleft = NaN;
-             cell.lowerright = NaN;
+             cell.right = cell.myLoc - verticalStepCount;
+             cell.upperleft = cell.myLoc - verticalStepCount - 1;
+             cell.lowerright = cell.myLoc - verticalStepCount + 1;
          }
+         if(topEdge.indexOf(cell.myLoc) > -1 ){
+             cell.above = cell.myLoc + diffTopAndBottom;
+             cell.upperleft = cell.myLoc + diffTopAndBottom;
+             cell.upperright = cell.myLoc + diffTopAndBottom + 1;
+         }
+
+         if(bottomEdge.indexOf(cell.myLoc) > -1 ){
+             cell.below = cell.myLoc - diffTopAndBottom;
+             cell.lowerleft = cell.myLoc - diffTopAndBottom - 1;
+             cell.lowerright = cell.myLoc - diffTopAndBottom + 1;
+         }
+
          if(leftEdge.indexOf(cell.myLoc) > -1 ){
-             cell.left = NaN;
-             cell.upperleft = NaN;
-             cell.lowerleft = NaN;
+             cell.left = cell.myLoc + verticalStepCount;
+             cell.upperleft = cell.myLoc + verticalStepCount - 1;
+             cell.lowerleft = cell.myLoc + verticalStepCount + 1;
          }
+         if(leftEdge.indexOf(cell.myLoc) > - 1 && topEdge.indexOf(cell.myLoc) > - 1){
+             cell.upperleft = bottomEdge[bottomEdge.length - 1];
+             cell.left = topEdge[topEdge.length - 1];
+             cell.lowerleft = topEdge[topEdge.length - 1] - 1;
+         }
+         if(rightEdge.indexOf(cell.myLoc) > - 1 && topEdge.indexOf(cell.myLoc) > - 1){
+             cell.lowerright = cell.myLoc + 1 ;
+             cell.right = topEdge[0];
+             cell.upperright =  topEdge[0] + diffTopAndBottom ;
+         }
+         if(leftEdge.indexOf(cell.myLoc) > - 1 && bottomEdge.indexOf(cell.myLoc) > - 1){
+             cell.upperleft = bottomEdge[bottomEdge.length - 1] - verticalStepCount ;
+             cell.left = bottomEdge[bottomEdge.length - 1];
+             cell.lowerleft = bottomEdge[bottomEdge.length - 1] - diffTopAndBottom;
+         }
+         if(rightEdge.indexOf(cell.myLoc) > - 1 && bottomEdge.indexOf(cell.myLoc) > - 1){
+             cell.lowerright = topEdge[0];
+             cell.right = bottomEdge[0];
+             cell.upperright =  bottomEdge[0] - verticalStepCount ;
+         }
+
+
 
          return cell;
         //  console.log(`leftEdge is is ${leftEdge}`);
@@ -102,7 +130,7 @@ class LifeCell extends React.Component {
         neighbors.lowerleft = myLoc + distance -  1;
         neighbors.lowerright = myLoc + distance + 1;
 
-        return this.props.validCells(neighbors);
+        return this.props.validCells(neighbors); // checks to be sure its neighbors are valid
 
     };
 
