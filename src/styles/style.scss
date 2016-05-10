@@ -1,0 +1,29 @@
+$cellSize: 10px;
+$boardSize: 400px;
+.container{
+  margin-top: 10px;
+}
+.cell{
+  border: solid gray 1px;
+  height: $cellSize;
+  width: $cellSize;
+  float: left;
+}
+.young{
+
+}
+.mature{
+
+}
+.old{
+
+}
+.dead{
+  background-color: black;
+}
+
+.cell-board{
+  height: $boardSize;
+  width: $boardSize;
+
+}
