@@ -1,29 +1,41 @@
-$cellSize: 10px;
-$boardSize: 400px;
+$cellSize: 15px;
+$boardSize: 600px;
+
+$color: orange;
+$young : lighten($color, 30%);
+$mature : lighten($color, 5%);
+$old : darken($color,15%);
+
+body{
+  background-color: SlateGray;
+}
 .container{
   margin-top: 10px;
-}
-.cell{
-  border: solid gray 1px;
-  height: $cellSize;
-  width: $cellSize;
-  float: left;
-}
-.young{
-
-}
-.mature{
-
-}
-.old{
-
-}
-.dead{
-  background-color: black;
 }
 
 .cell-board{
   height: $boardSize;
   width: $boardSize;
 
+}
+.cell-board div{
+  border: solid gray 1px;
+  height: $cellSize;
+  width: $cellSize;
+  float: left;
+}
+.alive{
+  background-color: Pink;
+}
+.young{
+  background-color: $young;
+}
+.mature{
+  background-color: $mature;
+}
+.old{
+  background-color: $old;
+}
+.dead{
+  background-color: black;
 }
