@@ -14,15 +14,15 @@ class GameBoard extends React.Component { // contains all of the cells
 
     }
     componentWillMount() {
-        this.cells = this.GenerateNeighbors();
+        this.cells = this.GenerateNeighbors(); // makes the neighbors on page load
     }
-    getCellState = (cell,storedCellState) => {
+    getCellState = (cell,storedCellState) => { // used to determine if a cell will live or die in the next generation
         let cells = this.cells;
         let neighborCount = 0;
         let state = 'dead';
         for (let cellprop in cells[cell]) {
             if (cellprop !== 'myLoc') {
-                if (storedCellState[this.cells[cell][cellprop]] !== 'dead') {
+                if (storedCellState[this.cells[cell][cellprop]] !== 'dead' && !!storedCellState[this.cells[cell][cellprop]] ) {
                     //console.log(this.cells);
                     ++neighborCount;
                 }
@@ -31,7 +31,11 @@ class GameBoard extends React.Component { // contains all of the cells
         if (neighborCount <= 1) {
             state = 'dead';
         } else if (neighborCount === 2) {
-            state = 'mature';
+            if (storedCellState[this.cells[cell].myLoc] === 'dead') {
+                state = 'dead';
+            } else {
+                state = 'mature';
+            }
         } else if (neighborCount === 3) {
             if (storedCellState[this.cells[cell].myLoc] === 'dead') {
                 state = 'young';
@@ -64,7 +68,7 @@ class GameBoard extends React.Component { // contains all of the cells
         return neighbors;
     };
 
-    GenerateNeighbors(cells = this.state.cellcount) {
+    GenerateNeighbors(cells = this.state.cellcount) { // makes the array for the neighbors
         const max = cells * cells
         const indexStart = 1;
         let grid = [];
@@ -135,6 +139,7 @@ class GameBoard extends React.Component { // contains all of the cells
             cell.upperright = bottomEdge[0] - verticalStepCount;
         }
 
+
         return cell;
     };
     MakeEdge = (startPos, stepCount) => { // determines which cells are boarder cells
@@ -152,12 +157,10 @@ class GameBoard extends React.Component { // contains all of the cells
 
     render() {
 
-        //this.CheckEdges();
         return (
             <div className='container'>
                 <div className='row'>
                     <div >
-                        {/*<LifeCell myState={this.getCellState} stoptimer={this.toggle} startCellstate={cellStates[startState]} XbyY={cells} validCells={this.CheckEdges} loc={i} key={i} />*/}
                         <LifeCell cellState={this.getCellState} cellcount={this.state.cellcount}/>
 
                     </div>
@@ -176,19 +179,16 @@ class LifeCell extends React.Component {
 
     }
     componentWillMount() {
-        this.cells = this.MakeGrid();
+        this.cells = this.MakeGrid(); // does the inital seeding of the cells
     }
     componentDidMount() {
-           this.genTimer = setInterval(this.Generation,timerspeed);
-          //genTimer();
-          //this.setState({timeInterval:genTimer});
-          this.stop = false;
-
+           this.genTimer = setInterval(this.Generation,timerspeed); // starts timer on page load
+          this.stop = false; // used to determine whether or not the stop the timer
     }
     componentWillUnmount() {
-         clearInterval(this.genTimer);
+         clearInterval(this.genTimer); // clears timer on page unload
     }
-    Generation = () =>{
+    Generation = () =>{ // does the cell cyles for the board
         let cellStates = this.state.storedCellStates;
         cellStates = cellStates.map((element,index,array)=>{
             if(!!element){
@@ -197,9 +197,10 @@ class LifeCell extends React.Component {
             }
         });
 
+
         this.setState({storedCellStates:cellStates});
     } ;
-    Addlife =(cell,cellState) => {
+    Addlife =(cell,cellState) => { // allows for manually setting a cell alive or dead
 
         $("#"+cell).removeClass(cellState).addClass('mature');
      };
@@ -208,19 +209,18 @@ class LifeCell extends React.Component {
     MakeGrid = (cells = this.props.cellcount) => { // makes the grid for the game
         const max = cells * cells
         const indexStart = 1;
-        let cellStates = ['mature','dead','dead','dead','dead','dead','dead','dead','dead','dead','dead' ];
-        //let grid = [];
+        let cellStates = ['mature','mature','mature','dead','dead','dead','dead' ];
         let cellStatus = [];
         for (let i = indexStart; i <= max; i++) {
-            let startState = Math.floor(Math.random() * (cellStates.length - 0) + 0);
-            cellStatus[i] = cellStates[startState];
-        }
+           let startState = Math.floor(Math.random() * (cellStates.length - 0) + 0);
+           cellStatus[i] = cellStates[startState];
+       }
 
         this.setState({storedCellStates:cellStatus});
 
         return cellStatus;
     };
-    Timer = () =>{
+    Timer = () =>{ //starts and stops the timer
         this.stop = !this.stop;
         if(this.stop){
              clearInterval(this.genTimer);
@@ -230,8 +230,7 @@ class LifeCell extends React.Component {
              $('#time_btn').text('Stop Timer');
         }
     };
-    Step = () =>{
-
+    Step = () =>{ // goes through the generation cycles one step at a time
         if(this.stop){
              this.Generation();
         }
@@ -243,7 +242,7 @@ class LifeCell extends React.Component {
             <div className='cell-board'>
                 {cellStates.map((element,index,array)=>{
                     if(!!element){
-                        return (<div onClick={()=>this.Addlife(index,cellStates[index])} ref='test' id={index} key={index} className={cellStates[index]}/>)
+                        return (<div title={'cell '+index} onClick={()=>this.Addlife(index,cellStates[index])} ref='test' id={index} key={index} className={cellStates[index]}/>)
                     }
                 })}
             </div>
