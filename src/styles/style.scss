@@ -1,5 +1,6 @@
 $cellSize: 15px;
-$boardSize: 450px;
+$boardSize: 600px;
+$cellBorder: inset gray 1px;
 
 $color: orange;
 $young : lighten($color, 30%);
@@ -12,30 +13,34 @@ body{
 .container{
   margin-top: 10px;
 }
+.cell-container{
+}
 
 .cell-board{
   height: $boardSize;
   width: $boardSize;
+  div{
+    height: $cellSize;
+    width: $cellSize;
+    float: left;
+  }
 
 }
-.cell-board div{
-  border: solid gray 1px;
-  height: $cellSize;
-  width: $cellSize;
-  float: left;
-}
-.alive{
-  background-color: Pink;
-}
+
+
 .young{
   background-color: $young;
+  border: $cellBorder;
 }
 .mature{
   background-color: $mature;
+  border: $cellBorder;
 }
 .old{
   background-color: $old;
+  border: $cellBorder;
 }
 .dead{
   background-color: black;
+  border: $cellBorder;
 }

@@ -9,7 +9,7 @@ class GameBoard extends React.Component { // contains all of the cells
     constructor(props) {
         super(props);
         this.state = {
-            cellcount: 30
+            cellcount: 40
         };
 
     }
@@ -103,7 +103,7 @@ class GameBoard extends React.Component { // contains all of the cells
         }
         if (topEdge.indexOf(cell.myLoc) > -1) { // connects top to the bottom
             cell.above = cell.myLoc + diffTopAndBottom;
-            cell.upperleft = cell.myLoc + diffTopAndBottom;
+            cell.upperleft = cell.myLoc + diffTopAndBottom - 1;
             cell.upperright = cell.myLoc + diffTopAndBottom + 1;
         }
 
@@ -160,9 +160,8 @@ class GameBoard extends React.Component { // contains all of the cells
         return (
             <div className='container'>
                 <div className='row'>
-                    <div >
+                    <div className='cell-container' >
                         <LifeCell cellState={this.getCellState} cellcount={this.state.cellcount}/>
-
                     </div>
                 </div>
             </div>
@@ -179,7 +178,8 @@ class LifeCell extends React.Component {
 
     }
     componentWillMount() {
-        this.cells = this.MakeGrid(); // does the inital seeding of the cells
+        this.MakeGrid(); // does the inital seeding of the cells
+        this.time_btn_text = 'Pause Timer';
     }
     componentDidMount() {
            this.genTimer = setInterval(this.Generation,timerspeed); // starts timer on page load
@@ -188,8 +188,8 @@ class LifeCell extends React.Component {
     componentWillUnmount() {
          clearInterval(this.genTimer); // clears timer on page unload
     }
-    Generation = () =>{ // does the cell cyles for the board
-        let cellStates = this.state.storedCellStates;
+    Generation = (cellStates = this.state.storedCellStates) =>{ // does the cell cyles for the board
+
         cellStates = cellStates.map((element,index,array)=>{
             if(!!element){
                  return element = this.props.cellState(index,array);
@@ -200,9 +200,24 @@ class LifeCell extends React.Component {
 
         this.setState({storedCellStates:cellStates});
     } ;
-    Addlife =(cell,cellState) => { // allows for manually setting a cell alive or dead
+    Addlife =(cell) => { // allows for manually setting a cell alive or dead
 
-        $("#"+cell).removeClass(cellState).addClass('mature');
+        let cells = this.props.cellcount;
+        const max = cells * cells
+        const indexStart = 1;
+        let cellStatus = [];
+
+        if(this.refs[cell].className === 'dead'){
+            this.refs[cell].className = 'mature';
+        }else{
+            this.refs[cell].className = 'dead';
+        }
+
+        for (let i = indexStart; i <= max; i++) {
+         cellStatus[i] = this.refs[i].className;
+       }
+       //console.log(cellStatus);
+        this.Generation(cellStatus);
      };
 
 
@@ -217,17 +232,16 @@ class LifeCell extends React.Component {
        }
 
         this.setState({storedCellStates:cellStatus});
-
-        return cellStatus;
     };
     Timer = () =>{ //starts and stops the timer
         this.stop = !this.stop;
         if(this.stop){
              clearInterval(this.genTimer);
              $('#time_btn').text('Resume Timer');
+            ;
         }else {
              this.genTimer = setInterval(this.Generation,timerspeed);
-             $('#time_btn').text('Stop Timer');
+             $('#time_btn').text('Pause Timer');
         }
     };
     Step = () =>{ // goes through the generation cycles one step at a time
@@ -242,16 +256,30 @@ class LifeCell extends React.Component {
             <div className='cell-board'>
                 {cellStates.map((element,index,array)=>{
                     if(!!element){
-                        return (<div title={'cell '+index} onClick={()=>this.Addlife(index,cellStates[index])} ref='test' id={index} key={index} className={cellStates[index]}/>)
+                         return (<div title={'cell '+index} ref={index} onClick={()=>this.Addlife(index)} id={index} key={index} className={cellStates[index]} ></div>)
                     }
                 })}
             </div>
-                <button id='time_btn' onClick={()=>this.Timer()}>Pause Timer</button>
-                <button onClick={()=>this.Step()}>Step</button>
-                <button onClick={()=>this.MakeGrid()}>Random</button>
+                <ButtonGroup stop={()=>this.Timer()} step={()=>this.Step()} newBoard={()=>this.MakeGrid()} />
             </div>
+
         );
     };
+}
+
+class ButtonGroup extends React.Component {
+    constructor(props){
+        super(props)
+    }
+    render(){
+        return(
+            <div className='ctrl_btns'>
+                <button id='time_btn' onClick={()=>this.props.stop()}>Pause Timer</button>
+                <button onClick={()=>this.props.step()}>Step</button>
+                <button onClick={()=> this.props.newBoard()}>Random</button>
+            </div>
+        );
+    }
 }
 
 const content = document.getElementById('content'); ReactDOM.render(
