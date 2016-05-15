@@ -97,45 +97,34 @@ class GameBoard extends React.Component { // contains all of the cells
         let diffTopAndBottom = leftEdge[leftEdge.length - 1] - horizontalStepCount;
 
         if (rightEdge.indexOf(cell.myLoc) > -1) { // connects right edge to the left
-            cell.right = cell.myLoc - verticalStepCount;
-            cell.upperright = cell.myLoc - verticalStepCount - 1;
-            cell.lowerright = cell.myLoc - verticalStepCount + 1;
-        }
-        if (topEdge.indexOf(cell.myLoc) > -1) { // connects top to the bottom
-            cell.above = cell.myLoc + diffTopAndBottom;
+            cell.right = leftEdge[rightEdge.indexOf(cell.myLoc)];
+            cell.upperright = leftEdge[rightEdge.indexOf(cell.myLoc)] - verticalStepCount;
+            cell.lowerright = cell.myLoc + 1;
+        }else if (topEdge.indexOf(cell.myLoc) > -1) { // connects top to the bottom
+            cell.above = bottomEdge[topEdge.indexOf(cell.myLoc)];
             cell.upperleft = cell.myLoc + diffTopAndBottom - 1;
             cell.upperright = cell.myLoc + diffTopAndBottom + 1;
-        }
-
-        if (bottomEdge.indexOf(cell.myLoc) > -1) { // connects bottom to top
-            cell.below = cell.myLoc - diffTopAndBottom;
+        }else if (bottomEdge.indexOf(cell.myLoc) > -1) { // connects bottom to top
+            cell.below = topEdge[bottomEdge.indexOf(cell.myLoc)];
             cell.lowerleft = cell.myLoc - diffTopAndBottom - 1;
             cell.lowerright = cell.myLoc - diffTopAndBottom + 1;
+        } else if (leftEdge.indexOf(cell.myLoc) > -1) { // connects left to right
+            cell.left = rightEdge[leftEdge.indexOf(cell.myLoc)];
+            cell.upperleft = cell.myLoc - 1;
+            cell.lowerleft = rightEdge[leftEdge.indexOf(cell.myLoc)] + verticalStepCount;
         }
 
-        if (leftEdge.indexOf(cell.myLoc) > -1) { // connects left to right
-            cell.left = cell.myLoc + verticalStepCount;
-            cell.upperleft = cell.myLoc + verticalStepCount - 1;
-            cell.lowerleft = cell.myLoc + verticalStepCount + 1;
-        }
         if (leftEdge.indexOf(cell.myLoc) > - 1 && topEdge.indexOf(cell.myLoc) > - 1) { // connects upper left corner to lower right corner
             cell.upperleft = bottomEdge[bottomEdge.length - 1];
             cell.left = topEdge[topEdge.length - 1];
-            cell.lowerleft = topEdge[topEdge.length - 1] - 1;
-        }
-        if (rightEdge.indexOf(cell.myLoc) > - 1 && topEdge.indexOf(cell.myLoc) > - 1) { // connects uppper right corner to lower left corner
+        }else if (rightEdge.indexOf(cell.myLoc) > - 1 && topEdge.indexOf(cell.myLoc) > - 1) { // connects uppper right corner to lower left corner
             cell.lowerright = cell.myLoc + 1;
-            cell.right = topEdge[0];
             cell.upperright = topEdge[0] + diffTopAndBottom;
-        }
-        if (leftEdge.indexOf(cell.myLoc) > - 1 && bottomEdge.indexOf(cell.myLoc) > - 1) { // connects lower left corner to upper right corner
+        }else if (leftEdge.indexOf(cell.myLoc) > - 1 && bottomEdge.indexOf(cell.myLoc) > - 1) { // connects lower left corner to upper right corner
             cell.upperleft = bottomEdge[bottomEdge.length - 1] - verticalStepCount;
-            cell.left = bottomEdge[bottomEdge.length - 1];
             cell.lowerleft = bottomEdge[bottomEdge.length - 1] - diffTopAndBottom;
-        }
-        if (rightEdge.indexOf(cell.myLoc) > - 1 && bottomEdge.indexOf(cell.myLoc) > - 1) { // connects lower right to upper left
+        }else if (rightEdge.indexOf(cell.myLoc) > - 1 && bottomEdge.indexOf(cell.myLoc) > - 1) { // connects lower right to upper left
             cell.lowerright = topEdge[0];
-            cell.right = bottomEdge[0];
             cell.upperright = bottomEdge[0] - verticalStepCount;
         }
 
@@ -172,13 +161,9 @@ class GameBoard extends React.Component { // contains all of the cells
 class LifeCell extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            storedCellStates: []
-        };
-
     }
     componentWillMount() {
-        this.MakeGrid(); // does the inital seeding of the cells
+        //this.MakeGrid(); // does the inital seeding of the cells
         this.time_btn_text = 'Pause Timer';
     }
     componentDidMount() {
@@ -188,79 +173,87 @@ class LifeCell extends React.Component {
     componentWillUnmount() {
          clearInterval(this.genTimer); // clears timer on page unload
     }
-    Generation = (cellStates = this.state.storedCellStates) =>{ // does the cell cyles for the board
-
-        cellStates = cellStates.map((element,index,array)=>{
-            if(!!element){
-                 return element = this.props.cellState(index,array);
-
-            }
-        });
-
-
-        this.setState({storedCellStates:cellStates});
-    } ;
-    Addlife =(cell) => { // allows for manually setting a cell alive or dead
+    Generation = () =>{ // does the cell cyles for the board
 
         let cells = this.props.cellcount;
         const max = cells * cells
         const indexStart = 1;
         let cellStatus = [];
 
-        if(this.refs[cell].className === 'dead'){
-            this.refs[cell].className = 'mature';
-        }else{
-            this.refs[cell].className = 'dead';
-        }
-
         for (let i = indexStart; i <= max; i++) {
          cellStatus[i] = this.refs[i].className;
        }
-       //console.log(cellStatus);
-        this.Generation(cellStatus);
-     };
+        cellStatus = cellStatus.map((element,index,array)=>{
+            if(!!element){
+                 return element = this.props.cellState(index,array);
+            }
+        });
+        for (let i = indexStart; i <= max; i++) {
+         this.refs[i].className = cellStatus[i] ;
+       }
+    };
 
+    Addlife =(cell) => { // allows for manually setting a cell alive or dead
+        if(this.refs[cell].className === 'dead'){
+            this.refs[cell].className = 'young';
+        }else{
+            this.refs[cell].className = 'dead';
+        }
+     };
 
     MakeGrid = (cells = this.props.cellcount) => { // makes the grid for the game
         const max = cells * cells
         const indexStart = 1;
-        let cellStates = ['mature','mature','mature','dead','dead','dead','dead' ];
+        let cellStates = ['mature','mature','mature','dead','dead','dead','dead' ]; // used to generate the board
         let cellStatus = [];
         for (let i = indexStart; i <= max; i++) {
            let startState = Math.floor(Math.random() * (cellStates.length - 0) + 0);
            cellStatus[i] = cellStates[startState];
        }
-
-        this.setState({storedCellStates:cellStatus});
+       return cellStatus;
+        //this.setState({storedCellStates:cellStatus});
     };
+
     Timer = () =>{ //starts and stops the timer
         this.stop = !this.stop;
         if(this.stop){
              clearInterval(this.genTimer);
              $('#time_btn').text('Resume Timer');
-            ;
         }else {
              this.genTimer = setInterval(this.Generation,timerspeed);
              $('#time_btn').text('Pause Timer');
         }
     };
+
     Step = () =>{ // goes through the generation cycles one step at a time
         if(this.stop){
              this.Generation();
         }
     };
+    ClearBoard = () =>{
+        let cells = this.props.cellcount;
+        const max = cells * cells
+        const indexStart = 1;
+
+        for (let i = indexStart; i <= max; i++) {
+         this.refs[i].className = 'dead';
+       }
+       this.stop = false;
+       this.Timer();
+   };
+
     render() {
-        let cellStates = this.state.storedCellStates;
+        let cellStates = this.MakeGrid(); // sets cellStates to the states of the cells on the board
         return (
             <div>
             <div className='cell-board'>
-                {cellStates.map((element,index,array)=>{
+                {cellStates.map((element,index,array)=>{ // prints cell states to the board
                     if(!!element){
-                         return (<div title={'cell '+index} ref={index} onClick={()=>this.Addlife(index)} id={index} key={index} className={cellStates[index]} ></div>)
+                         return (<div title={'cell '+index} ref={index} onClick={()=>this.Addlife(index)} id={index} key={index} className={element} ></div>)
                     }
                 })}
             </div>
-                <ButtonGroup stop={()=>this.Timer()} step={()=>this.Step()} newBoard={()=>this.MakeGrid()} />
+                <ButtonGroup clear={()=>this.ClearBoard()} stop={()=>this.Timer()} step={()=>this.Step()} newBoard={()=>this.MakeGrid()} /> {/*Buttons to control the board */}
             </div>
 
         );
@@ -277,6 +270,7 @@ class ButtonGroup extends React.Component {
                 <button id='time_btn' onClick={()=>this.props.stop()}>Pause Timer</button>
                 <button onClick={()=>this.props.step()}>Step</button>
                 <button onClick={()=> this.props.newBoard()}>Random</button>
+                <button onClick={()=> this.props.clear()}>Clear Board</button>
             </div>
         );
     }
