@@ -10,6 +10,16 @@ $old : darken($color,15%);
 body{
   background-color: SlateGray;
 }
+a, a:hover{
+  color: lighten(yellow,0%);
+  text-decoration: none;
+}
+.navbar{
+  background-color: black;
+  .h1{
+    color: white;
+  }
+}
 .container{
   margin-top: 10px;
 }
@@ -17,30 +27,35 @@ body{
 }
 
 .cell-board{
+  width: $boardSize;
   height: $boardSize;
-  width: $boardSize;
   div{
-    height: $cellSize;
-    width: $cellSize;
     float: left;
+
+    width: $cellSize;
+    height: $cellSize;
   }
 
 }
 
-
 .young{
+  border: $cellBorder;
   background-color: $young;
-  border: $cellBorder;
 }
 .mature{
+  border: $cellBorder;
   background-color: $mature;
-  border: $cellBorder;
 }
 .old{
+  border: $cellBorder;
   background-color: $old;
-  border: $cellBorder;
 }
 .dead{
+  border: $cellBorder;
   background-color: black;
-  border: $cellBorder;
+}
+#counter{
+  float:left;
+  margin-top: 12px;
+  margin-right: -70px;
 }

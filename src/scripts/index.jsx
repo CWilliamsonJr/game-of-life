@@ -3,7 +3,7 @@ require('../styles/style.scss');
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-let timerspeed = 200; // timer variable for the speed of generation. Located here for ease of chaning.
+let timerspeed = 150; // timer variable for the speed of generation. Located here for ease of chaning.
 
 class GameBoard extends React.Component { // contains all of the cells
     constructor(props) {
@@ -141,15 +141,31 @@ class GameBoard extends React.Component { // contains all of the cells
 
     render() {
         return (
-            <div className='container'>
-                <div className='row'>
-                    <div className='cell-container'>
-                        <LifeCell cellState={this.getCellState} cellcount={this.state.cellcount}/>
+            <div>
+                <nav className='navbar ' role="navigation">
+                    <PageTitle/>
+                </nav>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='cell-container'>
+                            <LifeCell cellState={this.getCellState} cellcount={this.state.cellcount}/>
+                        </div>
                     </div>
                 </div>
             </div>
         );
     };
+}
+class PageTitle extends React.Component {
+    render() {
+        return (
+            <div className='container'>
+                <span className='h1'>John Conway's Game of Life
+                </span>
+                <a href='https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'>&#160;(Click for more info)</a>
+            </div>
+        )
+    }
 }
 
 class LifeCell extends React.Component {
@@ -247,7 +263,7 @@ class LifeCell extends React.Component {
             this.refs[i].className = 'dead';
         }
         this.count = 0;
-        $('#count_txt').text(this.count);
+        //$('#count_txt').text(this.count);
         this.stop = false;
         this.Timer();
     };
@@ -276,8 +292,8 @@ class LifeCell extends React.Component {
                         }
                     })}
                 </div>
+                <CounterText/>
                 <ButtonGroup clear={() => this.ClearBoard()} stop={() => this.Timer()} step={() => this.Step()} newBoard={() => this.MakeRandomGrid()}/> {/*Buttons to control the board */}
-                <CounterText   />
             </div>
 
         );
@@ -290,21 +306,32 @@ class ButtonGroup extends React.Component {
     }
     render() {
         return (
-            <div className='ctrl_btns'>
-                <button title='pause or resume the cycles' id='time_btn' onClick={() => this.props.stop()}>Pause Timer</button>
-                <button title='Do the generations one cycle at a time' onClick={() => this.props.step()}>Step</button>
-                <button title='Start the cycle over with new celss' onClick={() => this.props.newBoard()}>Random</button>
-                <button title='clear the board' onClick={() => this.props.clear()}>Clear Board</button>
+            <div className='container'>
+
+                <div className='ctrl_btns btn-group col-sm-offset-1'>
+                    <button className='btn btn-default btn-primary' title='pause or resume the cycles' id='time_btn' onClick={() => this.props.stop()}>Pause Timer</button>
+                    <button className='btn btn-default btn-success' title='Do the generations one cycle at a time' onClick={() => this.props.step()}>Step</button>
+                    <button className='btn btn-default' title='Start the cycle over with new celss' onClick={() => this.props.newBoard()}>Random</button>
+                    <button className='btn btn-default btn-danger' title='clear the board' onClick={() => this.props.clear()}>Clear Board</button>
+
+                </div>
             </div>
         );
     };
 }
 
 class CounterText extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            value: '0'
+        }
+    }
 
     render() {
+
         return (
-            <div id='count_txt' >0</div>
+            <div id='counter'><span className='h3'>Generations:&#160;</span><span id='count_txt' className='h1'></span></div>
         );
     };
 }
