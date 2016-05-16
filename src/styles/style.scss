@@ -2,6 +2,8 @@ $cellSize: 15px;
 $boardSize: 600px;
 $cellBorder: inset gray 1px;
 
+$headerText: white;
+$headerColor: black;
 $color: orange;
 $young : lighten($color, 30%);
 $mature : lighten($color, 5%);
@@ -10,12 +12,15 @@ $old : darken($color,15%);
 body{
   background-color: SlateGray;
 }
-a, a:hover{
+a {
   color: lighten(yellow,0%);
-  text-decoration: none;
+  &:hover{
+    text-decoration: none;
+    color:$headerText;
+  }
 }
 .navbar{
-  background-color: black;
+  background-color: $headerColor;
   .h1{
     color: white;
   }
@@ -23,39 +28,63 @@ a, a:hover{
 .container{
   margin-top: 10px;
 }
-.cell-container{
+.cell-boarder{
+  border: double black 5px;
+  margin-right: $boardSize - 40px;
+  box-shadow: 0px 0px 25px 10px rgba(0, 0, 0, 0.5);
 }
 
 .cell-board{
-  width: $boardSize;
-  height: $boardSize;
+  width: $boardSize;  height: $boardSize;
+
   div{
     float: left;
 
-    width: $cellSize;
-    height: $cellSize;
+    width: $cellSize;    height: $cellSize;
   }
 
 }
 
 .young{
-  border: $cellBorder;
-  background-color: $young;
+  border: $cellBorder;  background-color: $young;
 }
 .mature{
-  border: $cellBorder;
-  background-color: $mature;
+  border: $cellBorder;  background-color: $mature;
 }
 .old{
-  border: $cellBorder;
-  background-color: $old;
+  border: $cellBorder;  background-color: $old;
 }
 .dead{
-  border: $cellBorder;
+  border: $cellBorder;
   background-color: black;
 }
 #counter{
   float:left;
+
   margin-top: 12px;
   margin-right: -70px;
+}
+.ctrl_btns{
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+  &:hover{
+    box-shadow: 0px 15px 10px 5px rgba(0, 0, 0, 0.5);
+  }
+}
+/*Styles used for footer */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 51px;
+  background-color: $headerColor;
+  color:$headerText;
 }

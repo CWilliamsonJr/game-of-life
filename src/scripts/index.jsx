@@ -21,7 +21,7 @@ class GameBoard extends React.Component { // contains all of the cells
         let state = 'dead';
         for (let cellprop in cells[cell]) {
             if (cellprop !== 'myLoc') {
-                if (storedCellState[this.cells[cell][cellprop]] !== 'dead' && !!storedCellState[this.cells[cell][cellprop]]) {
+                if (storedCellState[this.cells[cell][cellprop]] !== 'dead') { //checking the neigboring cells
                     //console.log(this.cells);
                     ++neighborCount;
                 }
@@ -99,19 +99,22 @@ class GameBoard extends React.Component { // contains all of the cells
             cell.right = leftEdge[rightEdge.indexOf(cell.myLoc)];
             cell.upperright = leftEdge[rightEdge.indexOf(cell.myLoc)] - verticalStepCount;
             cell.lowerright = cell.myLoc + 1;
-        } else if (topEdge.indexOf(cell.myLoc) > -1) { // connects top to the bottom
+        } else if (leftEdge.indexOf(cell.myLoc) > -1) { // connects left to right
+           cell.left = rightEdge[leftEdge.indexOf(cell.myLoc)];
+           cell.upperleft = cell.myLoc - 1;
+           cell.lowerleft = rightEdge[leftEdge.indexOf(cell.myLoc)] + verticalStepCount;
+       }
+
+        if (topEdge.indexOf(cell.myLoc) > -1) { // connects top to the bottom
             cell.above = bottomEdge[topEdge.indexOf(cell.myLoc)];
-            cell.upperleft = cell.myLoc + diffTopAndBottom - 1;
-            cell.upperright = cell.myLoc + diffTopAndBottom + 1;
-        } else if (bottomEdge.indexOf(cell.myLoc) > -1) { // connects bottom to top
+            cell.upperleft = bottomEdge[topEdge.indexOf(cell.myLoc)] - 1
+            cell.upperright = bottomEdge[topEdge.indexOf(cell.myLoc)] + 1;
+        }else if (bottomEdge.indexOf(cell.myLoc) > -1) { // connects bottom to top
             cell.below = topEdge[bottomEdge.indexOf(cell.myLoc)];
             cell.lowerleft = cell.myLoc - diffTopAndBottom - 1;
             cell.lowerright = cell.myLoc - diffTopAndBottom + 1;
-        } else if (leftEdge.indexOf(cell.myLoc) > -1) { // connects left to right
-            cell.left = rightEdge[leftEdge.indexOf(cell.myLoc)];
-            cell.upperleft = cell.myLoc - 1;
-            cell.lowerleft = rightEdge[leftEdge.indexOf(cell.myLoc)] + verticalStepCount;
         }
+
 
         if (leftEdge.indexOf(cell.myLoc) > - 1 && topEdge.indexOf(cell.myLoc) > - 1) { // connects upper left corner to lower right corner
             cell.upperleft = bottomEdge[bottomEdge.length - 1];
@@ -143,7 +146,7 @@ class GameBoard extends React.Component { // contains all of the cells
         return (
             <div>
                 <nav className='navbar ' role="navigation">
-                    <PageTitle/>
+                    <PageHeader/>
                 </nav>
                 <div className='container'>
                     <div className='row'>
@@ -152,18 +155,30 @@ class GameBoard extends React.Component { // contains all of the cells
                         </div>
                     </div>
                 </div>
+                <PageFooter />
             </div>
         );
     };
 }
-class PageTitle extends React.Component {
+class PageHeader extends React.Component {
     render() {
         return (
             <div className='container'>
                 <span className='h1'>John Conway's Game of Life
                 </span>
-                <a href='https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'>&#160;(Click for more info)</a>
+                <a href='https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'>&#160;(Click for more info about the game)</a>
             </div>
+        )
+    }
+}
+
+class PageFooter extends React.Component {
+    render() {
+        return (
+            <footer>
+                <div className=''>Designed by Clarence Williamson
+                </div>
+            </footer>
         )
     }
 }
@@ -283,14 +298,16 @@ class LifeCell extends React.Component {
         let cellStates = this.MakeGrid(); // sets cellStates to the states of the cells on the board
         return (
             <div>
-                <div className='cell-board'>
-                    {cellStates.map((element, index, array) => { // prints cell states to the board
-                        if (!!element) {
-                            return (
-                                <div title={'cell ' + index} ref={index} onClick={() => this.Addlife(index)} id={index} key={index} className={element}></div>
-                            )
-                        }
-                    })}
+                <div className='cell-boarder'>
+                    <div className='cell-board'>
+                        {cellStates.map((element, index, array) => { // prints cell states to the board
+                            if (!!element) {
+                                return (
+                                    <div ref={index} onClick={() => this.Addlife(index)} id={index} key={index} className={element}></div>
+                                )
+                            }
+                        })}
+                    </div>
                 </div>
                 <CounterText/>
                 <ButtonGroup clear={() => this.ClearBoard()} stop={() => this.Timer()} step={() => this.Step()} newBoard={() => this.MakeRandomGrid()}/> {/*Buttons to control the board */}
@@ -308,11 +325,11 @@ class ButtonGroup extends React.Component {
         return (
             <div className='container'>
 
-                <div className='ctrl_btns btn-group col-sm-offset-1'>
-                    <button className='btn btn-default btn-primary' title='pause or resume the cycles' id='time_btn' onClick={() => this.props.stop()}>Pause Timer</button>
-                    <button className='btn btn-default btn-success' title='Do the generations one cycle at a time' onClick={() => this.props.step()}>Step</button>
-                    <button className='btn btn-default' title='Start the cycle over with new celss' onClick={() => this.props.newBoard()}>Random</button>
-                    <button className='btn btn-default btn-danger' title='clear the board' onClick={() => this.props.clear()}>Clear Board</button>
+                <div className='btn-group col-sm-offset-1'>
+                    <button className='ctrl_btns btn btn-default btn-primary' title='pause or resume the cycles' id='time_btn' onClick={() => this.props.stop()}>Pause Timer</button>
+                    <button className='ctrl_btns btn btn-default btn-success' title='Do the generations one cycle at a time' onClick={() => this.props.step()}>Step</button>
+                    <button className='ctrl_btns btn btn-default' title='Start the cycle over with new celss' onClick={() => this.props.newBoard()}>Random</button>
+                    <button className='ctrl_btns btn btn-default btn-danger' title='clear the board' onClick={() => this.props.clear()}>Clear Board</button>
 
                 </div>
             </div>
